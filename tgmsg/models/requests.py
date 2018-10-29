@@ -1,9 +1,5 @@
 class Chat(object):
     def __init__(self, id: int, type: str, **kwargs):
-        if not isinstance(id, int):
-            raise TypeError('id must be an instance of int')
-        if not isinstance(type, str):
-            raise TypeError('type must be an instance of str')
         self.id = id
         self.type = type
         for key in kwargs:
@@ -20,8 +16,6 @@ class Message(object):
 
 class Update(object):
     def __init__(self, update_id: int, **kwargs):
-        if not isinstance(update_id, int):
-            raise TypeError('update_id must be an instance of int')
         self.update_id = update_id
         for key in kwargs:
             setattr(self, key, kwargs[key])

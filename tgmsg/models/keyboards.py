@@ -1,20 +1,32 @@
-class InlineKeyboardButton(object):
-    def __init__(self, text: str, url: str, callback_data: str, *args, **kwargs):
+class Keyboard(object):
+    def to_dict(self):
+        return {}
+
+
+class InlineKeyboardButton(Keyboard):
+    def __init__(self, text: str, url: str = None, callback_data: str = None, *args, **kwargs):
         if not isinstance(text, str):
             raise TypeError('text must be an instance of str')
-        if not isinstance(url, str):
-            raise TypeError('url must be an instance of str')
-        if not isinstance(callback_data, str):
-            raise TypeError('callback_data must be an instance of str')
         self.text = text
+        if url is not None:
+            if not isinstance(url, str):
+                raise TypeError('url must be an instance of str')
         self.url = url
+        if url is not None:
+            if not isinstance(callback_data, str):
+                raise TypeError('callback_data must be an instance of str')
         self.callback_data = callback_data
 
     def to_dict(self):
-        return {'text': self.text, 'url': self.url, 'callback_data': self.callback_data}
+        res = {'text': self.text}
+        if self.url:
+            res['url'] = self.url
+        if self.callback_data:
+            res['callback_data'] = self.callback_data
+        return res
 
 
-class InlineKeyboard(object):
+class InlineKeyboard(Keyboard):
     def __init__(self, button_rows: list = None):
         self.button_rows = []
         if button_rows is not None:
@@ -22,7 +34,7 @@ class InlineKeyboard(object):
                 raise TypeError('button_rows must be an instance of str')
             for row in button_rows:
                 if not isinstance(row, list):
-                    raise TypeError('row must be an instance of str')
+                    raise TypeError('row must be an instance of list')
                 for button in row:
                     if not isinstance(button, InlineKeyboardButton):
                         raise TypeError('button must be an instance of InlineKeyboardButton')
@@ -30,7 +42,7 @@ class InlineKeyboard(object):
 
     def row(self, button_row: list):
         if not isinstance(button_row, list):
-            raise TypeError('button_row must be an instance of str')
+            raise TypeError('button_row must be an instance of list')
         for button in button_row:
             if not isinstance(button, InlineKeyboardButton):
                 raise TypeError('button must be an instance of InlineKeyboardButton')
@@ -45,9 +57,9 @@ class KeyboardButton(object):
         if not isinstance(text, str):
             raise TypeError('text must be an instance of str')
         if not isinstance(request_contact, bool):
-            raise TypeError('request_contact must be an instance of str')
+            raise TypeError('request_contact must be an instance of bool')
         if not isinstance(request_location, bool):
-            raise TypeError('request_location must be an instance of str')
+            raise TypeError('request_location must be an instance of bool')
         self.text = text
         self.request_contact = request_contact
         self.request_location = request_location
@@ -60,22 +72,22 @@ class KeyboardButton(object):
         }
 
 
-class ReplyKeyboard(object):
+class ReplyKeyboard(Keyboard):
     def __init__(self, button_rows: list = None, resize_keyboard: bool = False, one_time_keyboard: bool = False,
                  selective: bool = False):
         self.button_rows = []
         if button_rows is not None:
             if not isinstance(resize_keyboard, bool):
-                raise TypeError('resize_keyboard must be an instance of str')
+                raise TypeError('resize_keyboard must be an instance of bool')
             if not isinstance(one_time_keyboard, bool):
-                raise TypeError('one_time_keyboard must be an instance of str')
+                raise TypeError('one_time_keyboard must be an instance of bool')
             if not isinstance(selective, bool):
-                raise TypeError('selective must be an instance of str')
+                raise TypeError('selective must be an instance of bool')
             if not isinstance(button_rows, list):
-                raise TypeError('button_rows must be an instance of str')
+                raise TypeError('button_rows must be an instance of list')
             for row in button_rows:
                 if not isinstance(row, list):
-                    raise TypeError('row must be an instance of str')
+                    raise TypeError('row must be an instance of list')
                 for button in row:
                     if not isinstance(button, KeyboardButton):
                         raise TypeError('button must be an instance of KeyboardButton')
@@ -83,7 +95,7 @@ class ReplyKeyboard(object):
 
     def row(self, button_row: list):
         if not isinstance(button_row, list):
-            raise TypeError('button_row must be an instance of str')
+            raise TypeError('button_row must be an instance of list')
         for button in button_row:
             if not isinstance(button, KeyboardButton):
                 raise TypeError('button must be an instance of KeyboardButton')

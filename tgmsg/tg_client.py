@@ -2,6 +2,8 @@ import json
 
 import requests
 
+from .models.messages import Message
+
 
 class TelegramClient(object):
     _tg_bot_api_url = 'https://api.telegram.org/bot'
@@ -17,7 +19,17 @@ class TelegramClient(object):
         def add(processor):
             self.text_message_processor = processor
             return processor
+
         return add
+
+    def send_message(self, chat_id, message: Message):
+        if not isinstance(chat_id, str) and not isinstance(chat_id, int):
+            raise TypeError('url must be an instance of str or int')
+        if not isinstance(message, Message):
+            raise TypeError('message must be an instance of Message')
+        msg = message.to_dict()
+        msg['chat_id'] = chat_id
+        self.post_request('sendMessage', json.dumps(msg))
 
     def set_webhook(self, url: str, max_connections: int, allowed_updates: list):
         if not isinstance(url, str):
