@@ -18,4 +18,6 @@ class Update(object):
     def __init__(self, update_id: int, **kwargs):
         self.update_id = update_id
         for key in kwargs:
+            if key == 'message':
+                kwargs[key] = Message(**kwargs[key])
             setattr(self, key, kwargs[key])

@@ -12,7 +12,7 @@ class InlineKeyboardButton(Keyboard):
             if not isinstance(url, str):
                 raise TypeError('url must be an instance of str')
         self.url = url
-        if url is not None:
+        if callback_data is not None:
             if not isinstance(callback_data, str):
                 raise TypeError('callback_data must be an instance of str')
         self.callback_data = callback_data
@@ -102,4 +102,4 @@ class ReplyKeyboard(Keyboard):
         self.button_rows.append(button_row)
 
     def to_dict(self):
-        return {'inline_keyboard': [[button.to_dict() for button in row] for row in self.button_rows]}
+        return {'keyboard': [[button.to_dict() for button in row] for row in self.button_rows]}

@@ -3,6 +3,8 @@ import json
 import requests
 
 from .models.messages import Message
+from .models.requests import Update
+from .errors import TelegramError
 
 
 class TelegramClient(object):
@@ -13,14 +15,28 @@ class TelegramClient(object):
             raise TypeError('token must be an instance of str')
         self.token = token
         self.first_name = self.get_me().get('first_name')
-        self.text_message_processor = None
+        self._text_message_processor = None
+        self._callback_query_processor = None
 
     def register_text_message_processor(self):
         def add(processor):
-            self.text_message_processor = processor
+            self._text_message_processor = processor
             return processor
-
         return add
+
+    def register_callback_query_processor(self):
+        def add(processor):
+            self._callback_query_processor = processor
+            return processor
+        return add
+
+    def process_json(self, msg: dict):
+        if not isinstance(msg, dict):
+            raise TypeError('msg must be an instance of dict')
+        update = Update(**msg)
+        if hasattr(update, 'message'):
+            self._text_message_processor(update)
+            return None
 
     def send_message(self, chat_id, message: Message):
         if not isinstance(chat_id, str) and not isinstance(chat_id, int):
@@ -51,6 +67,10 @@ class TelegramClient(object):
         if not isinstance(data, str):
             raise TypeError('data must be an instance of str')
         headers = requests.utils.default_headers()
+        headers['Content-Type'] = 'application/json'
         response = requests.post(f'{self._tg_bot_api_url}{self.token}/{endpoint}', data=data, headers=headers)
+        if response.status_code == 400:
+            msg = response.json()
+            raise TelegramError(msg['error_code'], msg['description'])
         response.raise_for_status()
         return json.loads(response.text)
