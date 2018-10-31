@@ -73,7 +73,7 @@ class KeyboardButton(object):
 
 
 class ReplyKeyboard(Keyboard):
-    def __init__(self, button_rows: list = None, resize_keyboard: bool = False, one_time_keyboard: bool = False,
+    def __init__(self, button_rows: list = None, resize_keyboard: bool = True, one_time_keyboard: bool = False,
                  selective: bool = False):
         self.button_rows = []
         if button_rows is not None:

@@ -15,28 +15,35 @@ class TelegramClient(object):
             raise TypeError('token must be an instance of str')
         self.token = token
         self.first_name = self.get_me().get('first_name')
-        self._text_message_processor = None
+        self._message_processor = None
         self._callback_query_processor = None
 
-    def register_text_message_processor(self):
+    def register_message_processor(self):
         def add(processor):
             self._text_message_processor = processor
             return processor
+
         return add
 
     def register_callback_query_processor(self):
         def add(processor):
             self._callback_query_processor = processor
             return processor
+
         return add
 
     def process_json(self, msg: dict):
         if not isinstance(msg, dict):
             raise TypeError('msg must be an instance of dict')
         update = Update(**msg)
-        if hasattr(update, 'message'):
-            self._text_message_processor(update)
+        if hasattr(update, 'callback_query'):
+            self._callback_query_processor(update)
             return None
+        elif hasattr(update, 'message'):
+            self._message_processor(update)
+            return None
+        else:
+            raise Exception('Now available just message and callback_query')
 
     def send_message(self, chat_id, message: Message):
         if not isinstance(chat_id, str) and not isinstance(chat_id, int):
@@ -47,15 +54,21 @@ class TelegramClient(object):
         msg['chat_id'] = chat_id
         self.post_request('sendMessage', json.dumps(msg))
 
-    def set_webhook(self, url: str, max_connections: int, allowed_updates: list):
+    def set_webhook(self, url: str, max_connections: int = None, allowed_updates: list = None):
         if not isinstance(url, str):
             raise TypeError('url must be an instance of str')
-        if not isinstance(max_connections, int):
-            raise TypeError('max_connections must be an instance of int')
-        if not isinstance(allowed_updates, list):
-            raise TypeError('allowed_updates must be an instance of list')
-        resp = self.post_request('setWebhook', json.dumps(
-            {'url': url, 'max_connections': max_connections, 'allowed_updates': allowed_updates}))
+        if max_connections is not None:
+            if not isinstance(max_connections, int):
+                raise TypeError('max_connections must be an instance of int')
+        if allowed_updates is not None:
+            if not isinstance(allowed_updates, list):
+                raise TypeError('allowed_updates must be an instance of list')
+        res = {'url': url}
+        if max_connections is not None:
+            res['max_connections'] = max_connections
+        if allowed_updates is not None:
+            res['allowed_updates'] = allowed_updates
+        resp = self.post_request('setWebhook', json.dumps(res))
         return resp
 
     def get_me(self):
