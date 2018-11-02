@@ -19,9 +19,9 @@ class InlineKeyboardButton(Keyboard):
 
     def to_dict(self):
         res = {'text': self.text}
-        if self.url:
+        if self.url is not None:
             res['url'] = self.url
-        if self.callback_data:
+        if self.callback_data is not None:
             res['callback_data'] = self.callback_data
         return res
 
@@ -31,7 +31,7 @@ class InlineKeyboard(Keyboard):
         self.button_rows = []
         if button_rows is not None:
             if not isinstance(button_rows, list):
-                raise TypeError('button_rows must be an instance of str')
+                raise TypeError('button_rows must be an instance of list')
             for row in button_rows:
                 if not isinstance(row, list):
                     raise TypeError('row must be an instance of list')
@@ -76,13 +76,17 @@ class ReplyKeyboard(Keyboard):
     def __init__(self, button_rows: list = None, resize_keyboard: bool = True, one_time_keyboard: bool = False,
                  selective: bool = False):
         self.button_rows = []
+        if not isinstance(resize_keyboard, bool):
+            raise TypeError('resize_keyboard must be an instance of bool')
+        if not isinstance(one_time_keyboard, bool):
+            raise TypeError('one_time_keyboard must be an instance of bool')
+        if not isinstance(selective, bool):
+            raise TypeError('selective must be an instance of bool')
+        self.resize_keyboard = resize_keyboard
+        self.one_time_keyboard = one_time_keyboard
+        self.selective = selective
+
         if button_rows is not None:
-            if not isinstance(resize_keyboard, bool):
-                raise TypeError('resize_keyboard must be an instance of bool')
-            if not isinstance(one_time_keyboard, bool):
-                raise TypeError('one_time_keyboard must be an instance of bool')
-            if not isinstance(selective, bool):
-                raise TypeError('selective must be an instance of bool')
             if not isinstance(button_rows, list):
                 raise TypeError('button_rows must be an instance of list')
             for row in button_rows:
@@ -102,4 +106,9 @@ class ReplyKeyboard(Keyboard):
         self.button_rows.append(button_row)
 
     def to_dict(self):
-        return {'keyboard': [[button.to_dict() for button in row] for row in self.button_rows]}
+        return {
+            'keyboard': [[button.to_dict() for button in row] for row in self.button_rows],
+            'resize_keyboard': self.resize_keyboard,
+            'one_time_keyboard': self.one_time_keyboard,
+            'selective': self.selective
+        }

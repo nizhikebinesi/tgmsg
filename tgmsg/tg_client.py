@@ -37,9 +37,13 @@ class TelegramClient(object):
             raise TypeError('msg must be an instance of dict')
         update = Update(**msg)
         if hasattr(update, 'callback_query'):
+            if not self._callback_query_processor:
+                raise AttributeError('_callback_query_processor not declared')
             self._callback_query_processor(update)
             return None
         elif hasattr(update, 'message'):
+            if not self._message_processor:
+                raise AttributeError('_message_processor not declared')
             self._message_processor(update)
             return None
         else:
