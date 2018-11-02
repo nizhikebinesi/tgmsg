@@ -91,3 +91,4 @@ class TelegramClient(object):
             raise TelegramError(msg['error_code'], msg['description'])
         response.raise_for_status()
         return json.loads(response.text)
+

@@ -12,7 +12,7 @@ class User(object):
             setattr(self, key, kwargs[key])
 
 
-class Message(object):
+class IncomingMessage(object):
     def __init__(self, message_id: int, chat, **kwargs):
         self.message_id = message_id
         self.chat = Chat(**chat)
@@ -27,7 +27,7 @@ class CallbackQuery(object):
         self.id = id
         for key in kwargs:
             if key == 'message':
-                kwargs[key] = Message(**kwargs[key])
+                kwargs[key] = IncomingMessage(**kwargs[key])
             if key == 'from':
                 kwargs[key] = User(**kwargs[key])
             setattr(self, key, kwargs[key])
@@ -41,5 +41,5 @@ class Update(object):
             if key == 'callback_query':
                 kwargs[key] = CallbackQuery(**kwargs[key])
             if key == 'message':
-                kwargs[key] = Message(**kwargs[key])
+                kwargs[key] = IncomingMessage(**kwargs[key])
             setattr(self, key, kwargs[key])

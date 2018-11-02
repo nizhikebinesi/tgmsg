@@ -2,6 +2,8 @@ import pytest
 
 from tgmsg.models.keyboards import InlineKeyboardButton, InlineKeyboard, KeyboardButton, ReplyKeyboard, Keyboard
 from tgmsg.models.messages import Message, TextMessage
+from tgmsg.models.requests import IncomingMessage, User, CallbackQuery, Update, Chat
+from tgmsg.errors import TelegramError
 
 
 class TestKeyboards:
@@ -99,3 +101,61 @@ class TestKeyboards:
 
 class TestMessages:
     def test_Message(self):
+        m = Message()
+        assert m.to_dict() == {}
+
+    def test_TextMessage(self):
+        b = InlineKeyboardButton('hello', 'hello', 'hello')
+        k = InlineKeyboard([[b]])
+        m = TextMessage('test', 'test', k, True, True, 1)
+        assert m.to_dict() == {
+            'text': 'test',
+            'parse_mode': 'test',
+            'reply_markup': {'inline_keyboard': [[{
+                'text': 'hello',
+                'url': 'hello',
+                'callback_data': 'hello'
+            }
+            ]]},
+            'disable_web_page_preview': True,
+            'disable_notification': True,
+            'reply_to_message_id': 1
+        }
+        with pytest.raises(TypeError):
+            TextMessage(1, 'test', k, True, True, 1)
+        with pytest.raises(TypeError):
+            TextMessage('test', 1, k, True, True, 1)
+        with pytest.raises(TypeError):
+            TextMessage('test', 'test', 1, True, True, 1)
+        with pytest.raises(TypeError):
+            TextMessage('test', 'test', k, '', True, 1)
+        with pytest.raises(TypeError):
+            TextMessage('test', 'test', k, True, '', 1)
+        with pytest.raises(TypeError):
+            TextMessage('test', 'test', k, True, True, '')
+
+
+class TestRequests:
+    def test_User(self):
+        u = User(1)
+
+    def test_Chat(self):
+        c = Chat(1, 'sdf')
+
+    def test_IncomingMessage(self):
+        m = IncomingMessage(**{'message_id': 1, 'chat': {'id': 1, 'type': 'sdf'}, 'from': {'id': 1}})
+
+    def test_CallbackQuery(self):
+        CallbackQuery(**{'id': 1, 'message': {'message_id': 1, 'chat': {'id': 1, 'type': 'sdf'}, 'from': {'id': 1}},
+                         'from': {'id': 1}})
+
+    def test_Update(self):
+        Update(**{'update_id': 1, 'callback_query': {'id': 1,
+                                                     'message': {'message_id': 1, 'chat': {'id': 1, 'type': 'sdf'},
+                                                                 'from': {'id': 1}},
+                                                     'from': {'id': 1}}})
+        Update(**{'update_id': 1, 'message': {'message_id': 1, 'chat': {'id': 1, 'type': 'sdf'}, 'from': {'id': 1}}})
+
+class TestError:
+    def test_Error(self):
+        TelegramError(100, 'asd')
