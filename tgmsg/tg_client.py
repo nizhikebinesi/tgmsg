@@ -20,7 +20,7 @@ class TelegramClient(object):
 
     def register_message_processor(self):
         def add(processor):
-            self._text_message_processor = processor
+            self._message_processor = processor
             return processor
 
         return add
