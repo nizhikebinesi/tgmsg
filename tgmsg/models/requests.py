@@ -5,6 +5,7 @@ class Chat(object):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+
 class User(object):
     def __init__(self, id: int, **kwargs):
         self.id = id
@@ -31,7 +32,6 @@ class CallbackQuery(object):
             if key == 'from':
                 kwargs[key] = User(**kwargs[key])
             setattr(self, key, kwargs[key])
-
 
 
 class Update(object):
