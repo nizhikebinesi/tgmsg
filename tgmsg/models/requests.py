@@ -26,10 +26,13 @@ class IncomingMessage(object):
 class CallbackQuery(object):
     def __init__(self, id: int, **kwargs):
         self.id = id
+        if 'from' in kwargs:
+            kwargs['m_from'] = kwargs['from']
+            del kwargs['from']
         for key in kwargs:
             if key == 'message':
                 kwargs[key] = IncomingMessage(**kwargs[key])
-            if key == 'from':
+            if key == 'm_from':
                 kwargs[key] = User(**kwargs[key])
             setattr(self, key, kwargs[key])
 
