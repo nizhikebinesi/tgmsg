@@ -39,13 +39,11 @@ class TelegramClient(object):
         if hasattr(update, 'callback_query'):
             if not self._callback_query_processor:
                 raise AttributeError('_callback_query_processor not declared')
-            self._callback_query_processor(update)
-            return None
+            return self._callback_query_processor(update)
         elif hasattr(update, 'message'):
             if not self._message_processor:
                 raise AttributeError('_message_processor not declared')
-            self._message_processor(update)
-            return None
+            return self._message_processor(update)
         else:
             raise Exception('Now available just message and callback_query')
 
@@ -78,6 +76,10 @@ class TelegramClient(object):
     def get_me(self):
         return self.post_request('getMe', '{}')
 
+    def get_image(self, image_id):
+        data = self.post_request('getFile', json.dumps({'file_id': image_id}))
+        res = requests.get(f'https://api.telegram.org/file/bot{self.token}/{data["file_path"]}')
+
     def post_request(self, endpoint: str, data: str):
         if not isinstance(endpoint, str):
             raise TypeError('endpoint must be an instance of str')
@@ -91,4 +93,3 @@ class TelegramClient(object):
             raise TelegramError(msg['error_code'], msg['description'])
         response.raise_for_status()
         return json.loads(response.text)
-
