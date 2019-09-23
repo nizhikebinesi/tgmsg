@@ -20,7 +20,7 @@ class IncomingMessage(object):
         if 'from' in kwargs:
             kwargs['m_from'] = kwargs['from']
         for key in kwargs:
-            if key == 'from':
+            if key == 'm_from':
                 kwargs[key] = User(**kwargs[key])
             setattr(self, key, kwargs[key])
 
