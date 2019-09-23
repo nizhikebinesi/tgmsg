@@ -17,6 +17,8 @@ class IncomingMessage(object):
     def __init__(self, message_id: int, chat, **kwargs):
         self.message_id = message_id
         self.chat = Chat(**chat)
+        if 'from' in kwargs:
+            kwargs['m_from'] = kwargs['from']
         for key in kwargs:
             if key == 'from':
                 kwargs[key] = User(**kwargs[key])
