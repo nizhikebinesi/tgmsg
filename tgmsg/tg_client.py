@@ -78,6 +78,7 @@ class TelegramClient(object):
 
     def get_image(self, image_id):
         data = self.post_request('getFile', json.dumps({'file_id': image_id}))
+        print(data)
         return requests.get(f'https://api.telegram.org/file/bot{self.token}/{data["file_path"]}').content
 
     def post_request(self, endpoint: str, data: str):
