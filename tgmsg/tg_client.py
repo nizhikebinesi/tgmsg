@@ -52,9 +52,13 @@ class TelegramClient(object):
             raise TypeError('url must be an instance of str or int')
         if not isinstance(message, Message):
             raise TypeError('message must be an instance of Message')
-        msg = message.to_dict()
-        msg['chat_id'] = chat_id
-        self.post_request('sendMessage', json.dumps(msg))
+        # TODO
+        if message.endpoint:
+            msg = message.to_dict()
+            msg['chat_id'] = chat_id
+            self.post_request(message.endpoint, json.dumps(msg))
+        else:
+            raise ValueError('message should have not empty endpoint')
 
     def set_webhook(self, url: str, max_connections: int = None, allowed_updates: list = None):
         if not isinstance(url, str):
