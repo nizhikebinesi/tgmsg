@@ -22,14 +22,12 @@ class TelegramClient(object):
         def add(processor):
             self._message_processor = processor
             return processor
-
         return add
 
     def register_callback_query_processor(self):
         def add(processor):
             self._callback_query_processor = processor
             return processor
-
         return add
 
     def process_json(self, msg: dict):
